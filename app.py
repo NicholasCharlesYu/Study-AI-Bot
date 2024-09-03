@@ -83,3 +83,7 @@ if run.status == 'completed':
     print(f"Assistant Response: {response}")
 else:
   print(run.status)
+
+#== Check Logs ==
+logs = client.beta.threads.runs.steps.list(thread_id=thread_id, run_id=run.id)
+print(f"Run Steps: {logs.data[0]}")
