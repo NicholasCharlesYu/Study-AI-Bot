@@ -22,6 +22,8 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 if "last_run_id" not in st.session_state:
     st.session_state.last_run_id = None
+if "input_processed" not in st.session_state:
+    st.session_state.input_processed = False
 
 st.set_page_config(layout="wide")
 
@@ -115,23 +117,19 @@ def process_user_input(input_text):
 
 # Function to handle user input
 def handle_input():
-    user_message = st.session_state.user_input
-    if user_message:
+    if st.session_state.user_input:
+        user_message = st.session_state.user_input
         st.session_state.chat_history.append(("User", user_message))
         assistant_response = process_user_input(user_message)
         st.session_state.chat_history.append(("Assistant", assistant_response))
-        st.session_state.user_input = ""  # This will clear the input for the next render
+        st.session_state.user_input = ""  # Clear the input
 
 # Create a container for the chat history
 chat_container = st.container()
 
-# Input area at the bottom
-st.text_input("Type your question here:", key="user_input", on_change=handle_input)
-start_chat = st.button("Start Chat", on_click=handle_input)
-
 # Display chat history
 with chat_container:
-    for i, (role, message) in enumerate(st.session_state.chat_history):
+    for role, message in st.session_state.chat_history:
         if role == "User":
             st.markdown(f'<div class="user-message"><b>You:</b> {message}</div>', unsafe_allow_html=True)
         else:
@@ -157,13 +155,8 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Display chat history
-with chat_container:
-    for i, (role, message) in enumerate(st.session_state.chat_history):
-        if role == "User":
-            st.markdown(f'<div class="user-message"><b>You:</b> {message}</div>', unsafe_allow_html=True)
-        else:
-            st.markdown(f'<div class="assistant-message"><b>Assistant:</b> {message}</div>', unsafe_allow_html=True)
+# Input area at the bottom
+st.text_input("Type your question here:", key="user_input", on_change=handle_input)
 
 # Display run steps (for debugging)
 if st.button("Show Run Steps"):
